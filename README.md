@@ -1,94 +1,146 @@
-# Hospital Record Encryption – Student Marks Management (C)
+# Hospital Record Encryption (C)
 
-A command-line program to manage and securely store student marks (or hospital-style records) with a simple **educational encryption** layer.
+Two complementary C programs that demonstrate secure collection and retrieval of patient records:
 
-> **Important:**  
-> This project uses a basic Caesar-style cipher for learning purposes only.  
-> It is **not** suitable for real patient or student data in production.
+* **Nurse Program** – creates encrypted patient files.
+* **Consultant Program** – retrieves and updates those files.
 
----
-
-## Overview
-This system allows a teacher or administrator to:
-
-* Create a class roster (up to **35 students**, each with a name of up to **50 characters**).
-* Record marks for up to **10 tests** per student.
-* View all marks in a tabular format with automatic per-student averages.
-* Enter a **Supervisor Mode** (PIN-protected) to:
-  * Change the supervisor PIN.
-  * Add new students.
-  * Correct a student’s name.
-  * Edit or lock individual marks.
-
-It demonstrates **structured C programming**, **file/console I/O**, basic **data security concepts**, and an interactive menu-driven interface.
+A project to showcase **C programming**, **file I/O**, and **basic encryption** concepts.
 
 ---
 
 ## Features
-* **Array-based data storage** for student names and marks.
-* **Lockable tests**: once confirmed, marks for a test are read-only unless changed by a supervisor.
-* **Input validation** for numeric ranges and string lengths.
-* Clear, user-friendly console menus.
+
+### Nurse Program (`nurse.c`)
+* Authenticates nurse with username and password (stored as Caesar-cipher text).
+* Accepts patient first name, last name, date of birth, and notes.
+* Encrypts and saves data to a file named `<lastname><dob>_record.aow`.
+
+### Consultant Program (`consultant.c`)
+* Authenticates consultant credentials.
+* Requests patient last name and DOB to locate the encrypted file.
+* Decrypts, displays patient details, and optionally appends new notes.
+* Re-encrypts and saves the updated record.
+
+---
+
+## File Structure
+
+```
+├── nurse.c              # Nurse-side program
+├── consultant.c         # Consultant-side program
+├── hospitalproject.pdf  # Full design and test report
+└── README.md
+```
 
 ---
 
 ## Build
 
-Compile with any C11-compatible compiler (GCC/Clang/MSVC).  
-Example with GCC:
+Use any C11-compatible compiler (e.g. GCC or Clang):
 
 ```bash
-gcc -std=c11 -O2 -Wall -Wextra -o student_marks student_marks_improved.c
+gcc -std=c11 -O2 -Wall -Wextra -o nurse nurse.c
+gcc -std=c11 -O2 -Wall -Wextra -o consultant consultant.c
+```
 
-Run
-./student_marks
+This produces two executables: `nurse` and `consultant`.
 
+---
 
-You will be guided to:
+## Run
 
-Enter the number of pupils and their names.
+### Nurse Program
+```bash
+./nurse
+```
+You’ll be prompted for:
+1. **User** (default demo: `nurse`)
+2. **Password** (demo: `nursepass`)
 
-Use the menu to enter marks, display marks, or enter Supervisor Mode.
+Then enter patient details:
+* First name
+* Last name
+* DOB (DDMMYYYY)
+* Initial notes
 
-Sample Session
-Welcome to the Student Marks System
-Enter number of pupils (1..35): 3
-Enter the names of the pupils:
-  Pupil 1 name: Alice
-  Pupil 2 name: Bob
-  Pupil 3 name: Charlie
+The program creates an encrypted record file such as:
+```
+<lastname><dob>_record.aow
+```
 
-Main Menu
- 1) Enter marks
- 2) Display marks
- 3) Supervisor mode
- 4) Exit program
-Choose: 1
+### Consultant Program
+```bash
+./consultant
+```
+Steps:
+1. Enter consultant credentials (demo user: `consultant`, password: `consultpass`).
+2. Provide the patient’s last name and DOB.
+3. View decrypted details and optionally add extra notes, which are re-encrypted on save.
 
-Enter test number (1..10): 1
-Entering marks for Test 1 (0 if no mark):
-  Alice: 90
-  Bob: 85
-  Charlie: 78
-Confirm and lock Test marks? 1=Yes 2=No: 1
-Test 1 marks locked.
+---
 
-File Structure
-├─ student_marks_improved.c   # Complete C source code
-├─ student_management_mark.pdf # Full project report and testing evidence
-└─ README.md
+## Example Session
 
-Future Enhancements
+```
+== Nurse Login ==
+User: nurse
+Pass: nursepass
 
-Replace the educational cipher with strong encryption (e.g., libsodium).
+== New Patient Entry ==
+First name: Alice
+Last name: Smith
+DOB (DDMMYYYY): 01012000
+Initial notes: Routine check-up
+Saved encrypted record: smith01012000_record.aow
+```
 
-Persist data to disk between runs (CSV or SQLite).
+Consultant side:
 
-Add automated unit tests and a Makefile or CI workflow.
+```
+== Consultant Login ==
+User: consultant
+Pass: consultpass
 
-Harden input validation and error handling.
+== Open Patient Record ==
+Last name: smith
+DOB (DDMMYYYY): 01012000
 
-Developed by Pritam Gurung to demonstrate C programming, basic security concepts, and user-friendly console application design
+-- Current Record --
+First: Alice
+Last: Smith
+DOB: 01012000
+Notes: Routine check-up
+Add consultant notes (blank to skip): Follow-up in 6 months
+Updated and re-encrypted.
+```
 
+---
 
-Supervisor Mode requires a PIN (default 3750) and offers options to add students, change a mark, correct names, or change the PIN.
+## Documentation
+
+Full design, implementation details, testing, and evaluation are provided in the project report:
+
+[Hospital Project Report (PDF)](ActionOnWeight-Patient-System/hospitalproject.pdf)
+
+---
+
+## Key Learning Points
+
+* **C Programming:** structured design, input validation, and modular functions.
+* **File I/O:** creation, reading, and updating of structured text records.
+* **Encryption Basics:** implementing a Caesar cipher for simple data protection.
+* **User Authentication:** verifying credentials against encrypted password storage.
+
+---
+
+## Future Improvements
+
+* Replace Caesar cipher with modern cryptography (e.g., AES via OpenSSL or libsodium).
+* Improve input validation and error handling.
+* Add unit tests and a Makefile for easier builds.
+* Expand to a database backend (SQLite) for scalable record management.
+
+---
+
+Developed by **Pritam Gurung**  
